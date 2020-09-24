@@ -1,0 +1,12 @@
+# Sample Authors
+# Remove file or replace with your own
+
+Nicolas LaCognata:
+  name: Billy Rick
+  picture: /images/bio-photo.jpg
+  twitter: "@Mr_Lever"
+  github: "MrLever"
+  links:
+    - title: GitHub
+      url: https://www.github.com/MrLever
+      icon: fab fa-github-square
