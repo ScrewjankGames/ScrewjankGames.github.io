@@ -1,6 +1,6 @@
 ---
 title: "Post: Image"
-image: /images/so-simple-sample-image-3.jpg
+image: /images/posts/writing-your-own-memory-allocators/system32.jpg
 categories:
   - Post Formats
 tags:
