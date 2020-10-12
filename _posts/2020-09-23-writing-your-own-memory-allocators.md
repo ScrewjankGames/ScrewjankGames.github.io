@@ -35,7 +35,7 @@ public:
 };
 ```
 
-The controlling ideas here is that users interact with allocators through stateful instances, which provides more flexibility when chaining or changing allocators out at runtime.
+The controlling ideas here is that users interact with allocators through stateful instances, which provides more flexibility when chaining or changing allocators out at runtime. `AllocateType<T>` is a handy template function that simply calls `Allocate()` with arguments `sizeof(T)` and `alignof(T)`.
 
 This interface was the first thing I wrote, and was inspired by an amalgam of sources that provided some great insights:
   - [Bitsquid](http://bitsquid.blogspot.com/2010/09/custom-memory-allocation-in-c.html)
