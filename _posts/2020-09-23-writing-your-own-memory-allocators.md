@@ -126,7 +126,7 @@ The short of it is that CPUs reads memory in chunks. If you don't respect that b
   <img src="{{ '/images/posts/writing-your-own-memory-allocators/alignment-threats.jpg' | absolute_url }}" alt="1. Your game will run slower. 2. Your game will crash. 3. Your game will crash your operating system">
 </figure> 
 
-When memory allocations are aligned, all the data can be read with the minimum number of memory accesses. Unaligned data can straddle two memory accesses, and require the processor to do some extra work to it together. These extra operations are always costly, and some processors may just refuse to to do them.
+When memory allocations are aligned, all the data can be read with the minimum number of memory accesses. Unaligned data can straddle two memory accesses, and require the processor to do some extra work to stitch it together. These extra operations are always costly, and some processors may just refuse to to do them.
 
 ### Calculating alignment
 To get the alignment requirement for any type in C++ you can use the `alignof()` operator.
@@ -586,50 +586,29 @@ They're also super easy to implement.
 **[ProxyAllocator.cpp](https://github.com/ScrewjankGames/ScrewjankEngine/blob/master/Engine/Source/Runtime/system/src/allocators/ProxyAllocator.cpp)**
 
 # Conclusions
-Writing allocators isn't a trivial task, and
+I'd like to end this post with some benchmarks that hopefully help convey why I put myself through this. These benchmarks are not exhaustive, but they provide a rough estimate of each allocator's performance.
 
-I'd like to end this post with some benchmarks that hopefully prove my point. Each of the following compares `malloc()` **n** allocations of size **x**, followed by **n** frees.
+Each of the following benchmarks compares plots the CPU time (in nanoseconds) each allocator used to perform some number of allocations of the size specified on the horizontal axis. Allocation sizes ranged from 32 Bytes to 16 Mebibytes. 
 
-### Malloc Vs. Linear Allocator (n = 1,000,000 x = 16 bytes)
-| Header1 | Header2 | Header3 |
-|:--------|:-------:|--------:|
-| cell1   | cell2   | cell3   |
-| cell4   | cell5   | cell6   |
-|-----------------------------|
-| cell1   | cell2   | cell3   |
-| cell4   | cell5   | cell6   |
-|=============================|
-| Foot1   | Foot2   | Foot3   |
+### Single Allocation Benchmark
+<figure style="width: 700px" class="align-center">
+  <img src="{{ '/images/posts/writing-your-own-memory-allocators/AllocationChart_x1.jpg' | absolute_url }}" alt="">
+</figure> 
 
-### Malloc Vs. Stack Allocator (n = 1,000,000 x = 16 bytes)
-| Header1 | Header2 | Header3 |
-|:--------|:-------:|--------:|
-| cell1   | cell2   | cell3   |
-| cell4   | cell5   | cell6   |
-|-----------------------------|
-| cell1   | cell2   | cell3   |
-| cell4   | cell5   | cell6   |
-|=============================|
-| Foot1   | Foot2   | Foot3   |
+### 8 Allocation Benchmark
+<figure style="width: 700px" class="align-center">
+  <img src="{{ '/images/posts/writing-your-own-memory-allocators/AllocationChart_x8.jpg' | absolute_url }}" alt="">
+</figure> 
 
-### Malloc Vs. Pool Allocator (n = 1,000,000 x = 16 bytes)
-| Header1 | Header2 | Header3 |
-|:--------|:-------:|--------:|
-| cell1   | cell2   | cell3   |
-| cell4   | cell5   | cell6   |
-|-----------------------------|
-| cell1   | cell2   | cell3   |
-| cell4   | cell5   | cell6   |
-|=============================|
-| Foot1   | Foot2   | Foot3   |
 
-### Malloc Vs. Free List Allocator (n = 1,000,000 x = 16 bytes)
-| Header1 | Header2 | Header3 |
-|:--------|:-------:|--------:|
-| cell1   | cell2   | cell3   |
-| cell4   | cell5   | cell6   |
-|-----------------------------|
-| cell1   | cell2   | cell3   |
-| cell4   | cell5   | cell6   |
-|=============================|
-| Foot1   | Foot2   | Foot3   |
+### 64 Allocation Benchmark
+<figure style="width: 700px" class="align-center">
+  <img src="{{ '/images/posts/writing-your-own-memory-allocators/AllocationChart_x64.jpg' | absolute_url }}" alt="">
+</figure> 
+
+### 256 Allocation Benchmark
+<figure style="width: 700px" class="align-center">
+  <img src="{{ '/images/posts/writing-your-own-memory-allocators/AllocationChart_x256.jpg' | absolute_url }}" alt="">
+</figure> 
+
+If you'd like to test it out for yourself, [here](https://github.com/ScrewjankGames/ScrewjankEngine/blob/420cd5641a24d6c00091ce57442170ae3166d4df/Engine/Source/Benchmarks/system/Allocator_benchmarks.cpp) is a link to the code used to generate the benchmark data above.
