@@ -55,11 +55,6 @@ This allocator is about as simple as possible. It's just a thin wrapper over `ma
 class UnmanagedAllocator : public Allocator
 {
 public:
-  ~UnmanagedAllocator()
-  {
-    SJ_ASSERT(m_ActiveAllocationCount == 0) // Memory leak detection
-  }
-
   void* Allocate(size_t size, size_t alignment = alignof(max_align_t))
   {
     return malloc(size);
