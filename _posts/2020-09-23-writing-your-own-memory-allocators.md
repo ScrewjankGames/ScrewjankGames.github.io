@@ -49,7 +49,7 @@ In addition to this interface, there's some golden rules that each allocator mus
 </figure> 
 
 # The Unmanaged Allocator
-This allocator is about as simple as possible. It's a thin wrapper over `malloc()` that keeps an allocation count for leak detection.
+This allocator is about as simple as possible. It's just a thin wrapper over `malloc()`. 
 
 ```cpp
 class UnmanagedAllocator : public Allocator
@@ -62,18 +62,14 @@ public:
 
   void* Allocate(size_t size, size_t alignment = alignof(max_align_t))
   {
-    m_ActiveAllocationCount++; 
     return malloc(size);
   }
 
   void Free(void* memory)
   {
-    m_ActiveAllocationCount--; 
     free(memory);
   }
 
-private:
-  size_t m_ActiveAllocationCount;
 };
 ```
 
@@ -116,7 +112,7 @@ void operator delete(void* memory) noexcept
 }
 ```
 
-This means calls to `operator new()` and `operator delete()` will now be forwarded to our allocator, with the added bonus of imploding the program if the allocator detects a memory leak at the end of execution.
+This means calls to `operator new()` and `operator delete()` will now be forwarded to our allocator. This is also why the UnmanagedAllocator does not track memory allocations. Since the destruction order of the MemorySystem is out of our control, if any other statically allocated object calls `delete` in it's constructor the program will crash. This is a side effect of the [static initialization order fiasco](https://isocpp.org/wiki/faq/ctors#static-init-order), and in this context there's not much we can do about it.
 
 # Memory Alignment
 For the remaining allocators, it's critical to understand the importance of memory alignment. Jonathan Rentzsch from IBM has an amazing rundown of [everything you need to know](https://developer.ibm.com/technologies/systems/articles/pa-dalign/). I highly suggest you give it a glance.
