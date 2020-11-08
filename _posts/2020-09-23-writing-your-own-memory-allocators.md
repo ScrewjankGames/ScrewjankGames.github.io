@@ -107,7 +107,7 @@ void operator delete(void* memory) noexcept
 }
 ```
 
-This means calls to `operator new()` and `operator delete()` will now be forwarded to our allocator. This is also why the UnmanagedAllocator does not track memory allocations. Since the destruction order of the MemorySystem is out of our control, if any other statically allocated object calls `delete` in it's constructor the program will crash. This is a side effect of the [static initialization order fiasco](https://isocpp.org/wiki/faq/ctors#static-init-order), and in this context there's not much we can do about it.
+This means calls to `operator new()` and `operator delete()` will now be forwarded to our allocator. This is also why the UnmanagedAllocator does not track memory allocations. Since the destruction order of the MemorySystem is out of our control, if any other statically allocated object calls `delete` in it's destructor the program will crash. This is a side effect of the [static initialization order fiasco](https://isocpp.org/wiki/faq/ctors#static-init-order), and in this context there's not much we can do about it.
 
 # Memory Alignment
 For the remaining allocators, it's critical to understand the importance of memory alignment. Jonathan Rentzsch from IBM has an amazing rundown of [everything you need to know](https://developer.ibm.com/technologies/systems/articles/pa-dalign/). I highly suggest you give it a glance.
